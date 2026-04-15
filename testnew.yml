@@ -39,7 +39,7 @@
 
     - name: Show count of packages updated today
       debug:
-        msg: "Number of packages altered today: {{ patch_count.stdout | default('0') }}"
+        msg: "Number of total  packages altered today: {{ patch_count.stdout | default('0') }}"
 
     - name: Show system IP and uptime
       shell: bash -c "hostname;hostname -I; uptime"
