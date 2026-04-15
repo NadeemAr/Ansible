@@ -1,0 +1,52 @@
+---
+- name: Patch and Reboot YUM-based Servers, then Show Package Count
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    #Get today's date in YYYY-MM-DD format
+    today: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"
+
+  tasks:
+
+    - name: Clean DNF cache
+      command: dnf clean all
+      ignore_errors: true
+
+    - name: Apply all available updates using DNF
+      dnf:
+        name: "*"
+        state: latest
+      register: patch_result
+
+    - name: Reboot the servers
+      reboot:
+        reboot_timeout: 600
+
+    - name: Wait for server to become reachable after reboot
+      wait_for_connection:
+        timeout: 300
+
+    - name: Gather facts after reboot
+      setup:
+
+
+    - name: Check how many packages were altered today
+      shell: "dnf history list | grep {{ today }} | cut -d '|' -f 5"
+      register: patch_count
+      ignore_errors: yes
+
+    - name: Show count of packages updated today
+      debug:
+        msg: "Number of packages altered today: {{ patch_count.stdout | default('0') }}"
+
+    - name: Show system IP and uptime
+      shell: bash -c "hostname;hostname -I; uptime"
+      register: ip_uptime
+
+    - name: Display system info
+      debug:
+        msg: |
+          {{ ip_uptime.stdout }}
+
