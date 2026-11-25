@@ -1,0 +1,12 @@
+---
+- name: Test AWX email notification
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Check server connectivity
+      ansible.builtin.ping:
+
+    - name: Display test message
+      ansible.builtin.debug:
+        msg: "AWX email notification test successful"
