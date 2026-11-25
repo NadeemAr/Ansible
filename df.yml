@@ -1,0 +1,14 @@
+---
+- name: Check filesystem utilization
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Check filesystem usage
+      ansible.builtin.command: df -hT
+      register: filesystem_output
+      changed_when: false
+
+    - name: Display filesystem usage
+      ansible.builtin.debug:
+        msg: "{{ filesystem_output.stdout_lines }}"
